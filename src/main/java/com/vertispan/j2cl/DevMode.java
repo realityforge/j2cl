@@ -188,6 +188,7 @@ public class DevMode {
     private static PathMatcher javaMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.java");
     private static PathMatcher nativeJsMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.native.js");
     private static PathMatcher jsMatcher = FileSystems.getDefault().getPathMatcher("glob:**/*.js");
+    private static PathMatcher publicJsMatcher = FileSystems.getDefault().getPathMatcher("glob:**/public/**/*.js");
 
     public static void main(String[] args) throws IOException, InterruptedException, ExecutionException {
 
@@ -330,7 +331,7 @@ public class DevMode {
             // blindly copy any JS in sources that aren't a native.js
             // TODO be less "blind" about this, only copy changed files?
             for (String dir : options.sourceDir) {
-                Files.find(Paths.get(dir), Integer.MAX_VALUE, (path, attrs) -> jsMatcher.matches(path) && !nativeJsMatcher.matches(path))
+                Files.find(Paths.get(dir), Integer.MAX_VALUE, (path, attrs) -> jsMatcher.matches(path) && !nativeJsMatcher.matches(path) && !publicJsMatcher.matches(path))
                         .forEach(path -> {
                             try {
                                 final Path target = Paths.get( options.outputJsPathDir, Paths.get( dir ).toAbsolutePath().relativize( path.toAbsolutePath() ).toString() );
@@ -458,7 +459,7 @@ public class DevMode {
                 try (FileSystem fs = FileSystems.newFileSystem(URI.create("jar:" + jszipOutFile.toURI()), Collections.singletonMap("create", "true"))) {
                     for (ZipEntry entry : Collections.list(zipInputFile.entries())) {
                         Path entryPath = Paths.get(entry.getName());
-                        if (jsMatcher.matches(entryPath) && !nativeJsMatcher.matches(entryPath)) {
+                        if (jsMatcher.matches(entryPath) && !nativeJsMatcher.matches(entryPath) && !publicJsMatcher.matches(entryPath)) {
                             try (InputStream inputStream = zipInputFile.getInputStream(entry)) {
                                 Path path = fs.getPath(entry.getName()).toAbsolutePath();
                                 Files.createDirectories(path.getParent());
