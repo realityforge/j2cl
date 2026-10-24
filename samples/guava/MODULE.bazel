@@ -65,3 +65,12 @@ j2cl_maven_import_external(
     ],
 )
 
+# --- BEGIN DEV OVERRIDES ---
+archive_override(
+    module_name = "rules_closure",
+    sha256 = "5cfdac5db78c5bd4a4591d5d48bd88b71f486b382bec2e998e105013b984a022",
+    strip_prefix = "rules_closure-629a48ef792bf21d4bd4b73133af55b52d169e8f",
+    urls = ["https://github.com/realityforge/rules_closure/archive/629a48ef792bf21d4bd4b73133af55b52d169e8f.tar.gz"],
+)
+# --- END DEV OVERRIDES ---
+
