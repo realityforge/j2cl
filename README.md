@@ -8,11 +8,8 @@ individual changes for later upstream submission.
 ## Prompt for a consolidation batch
 
 Copy the prompt below into a coding agent with access to the relevant downstream repositories.
-Supply the consumer repositories and local checkout locations when starting the batch. Keep private
-source details in the task's private records, not in this public repository.
 
 ```text
-Active project: J2CL
 Fork: https://github.com/realityforge/j2cl
 Upstream: https://github.com/google/j2cl
 
