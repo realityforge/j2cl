@@ -14,7 +14,7 @@ _compilation_test = unittest.make(
 )
 
 def test_compilation_suite(name):
-    browsers = ["@rules_webtesting//browsers:chromium-local"]
+    browsers = ["//build_defs/internal_do_not_use/browser:chrome-linux"]
     selected = select({":optimized": "ADVANCED", "//conditions:default": "BUNDLE"})
     cases = [
         ("advanced", {"browsers": browsers, "compilation_level": "ADVANCED"}, "ADVANCED"),
