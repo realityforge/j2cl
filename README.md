@@ -1,81 +1,100 @@
 # Peter Donald's J2CL fork
 
-This fork collects independently reviewable changes for [google/j2cl](https://github.com/google/j2cl).
-The default branch holds fork maintenance instructions. `integration` contains the downstream patches
-rebased onto current upstream. Its history changes during refreshes, so pin consumers to an exact commit.
-`upstream` contains upstream history only; `feature/*` branches retain individual changes for later
-upstream submission.
+This fork collects independently reviewable changes for
+[google/j2cl](https://github.com/google/j2cl).
+The default branch contains only these maintenance instructions, with independent history.
+`upstream` contains unmodified upstream history. `feature/*` branches retain individual
+changes, merged through pull requests into `integration`. Refreshes rewrite integration
+history; consumers pin its exact tested commit. Permanent snapshot tags retain published commits.
 
-## Prompt for a consolidation batch
+## Prompt for a refresh and rollout
 
-Copy the prompt below into a coding agent with access to the relevant downstream repositories.
+Supply the consumer repository scope privately when invoking this prompt. Consumer names,
+URLs, local paths, application fixtures and provenance belong in private task records.
 
 ```text
 Fork: https://github.com/realityforge/j2cl
 Upstream: https://github.com/google/j2cl
 
-Consolidate useful downstream J2CL patches into this existing fork. This task authorizes
-implementation, tests, commits, pushes, and creation and merge of feature PRs inside the fork.
-Do not submit upstream PRs or migrate downstream repositories. Preserve existing upstream
-submissions, unrelated branches, and uncommitted user changes.
+Refresh this fork and roll its tested integration commit through the privately supplied
+consumer scope. This authorizes implementation, tests, commits, pushes, and creation and
+merge of pull requests inside the fork and scoped consumers after their required checks
+and reviews. Preserve existing upstream submissions, unrelated refs and user changes.
+Upstream pull requests require separate authority. Preserve upstream-discussion and legacy
+branches unless the user explicitly includes them in the refresh.
 
-1. Read repository instructions and verify Git remotes and GitHub fork metadata. Discover
-   upstream's default branch. Create or fast-forward the fork's upstream branch to its current
-   commit, then freeze that exact baseline for this batch. Explain divergent history before
-   changing it. Inspect existing feature branches, integration history, and open and merged PRs;
-   reuse suitable work rather than duplicating it. Record the current remote heads before rewriting
-   integration or upstream-discussion. Preserve existing feature branches and unrelated refs.
+1. Read repository instructions and later user direction. Work on one repository at a time,
+   with one owner for its graph and serialized local builds. Move to another repository
+   after the current change reaches an unprotected default branch, its PR merges, or its
+   PR is waiting for CI. Pending CI gates only that repository. Use the established PR
+   monitoring workflow for waiting PRs; repairs must respect the same serial-work rule.
 
-2. Audit the supplied downstream checkouts, relevant managed worktrees, GitHub default branches,
-   working branches, and active PRs. Follow dependency declarations to additional sources.
-   Record exact revisions, uncommitted differences, patch application order, and every distinct
-   patch hunk. Inspect patch contents, consumers, tests, and history to establish motivation;
-   filenames and the absence of direct callers are insufficient evidence.
+2. Discover consumers within the privately authorized account/repository scope. Enumerate
+   accessible repositories rather than relying on search indexes or local checkouts alone.
+   Inspect current default-branch dependency declarations, build hooks, generated consumer
+   checks, active PRs and relevant worktrees. Follow source dependencies and vendored mirrors
+   to their canonical owners. Distinguish direct consumers, transitive requirements, tooling
+   references and archived examples. Record exact revisions, local changes, patch order,
+   coverage gaps and every distinct patch hunk privately.
 
-3. Give every hunk a disposition: implement in a named feature; already satisfied upstream
+3. Verify fork metadata and remotes, discover upstream's default branch, and freeze its
+   current commit as the batch baseline. Create or fast-forward upstream to that exact
+   commit; investigate divergence before changing it. Inspect feature refs, integration's
+   merge graph and open/merged PRs. Recover missing retained feature refs from verified PR
+   heads or current merge parents, accounting for previous graph rewrites. Keep automatic
+   feature-branch deletion disabled. Use supplied tested dependency SHAs. If a dependency
+   fork needs work first, finish one bounded refresh that publishes its tested SHA and returns
+   here without starting a consumer rollout or refreshing this fork recursively.
+
+4. Give every patch hunk a disposition: retain as a named feature; already satisfied upstream
    with a containing revision and behavioral evidence; replace with supported configuration;
-   obsolete with evidence; deferred with the unresolved issue and affected capability; or
-   owned by another upstream repository. A closed PR need not be merged, and a merged fix
-   need not be in a consumer's pinned release. Keep the detailed provenance record private.
+   obsolete with evidence; or unresolved with its affected capability. Compare variants and
+   partition by independently useful behavior. Keep application policy and data downstream.
+   Each feature starts directly from the baseline. Keep inseparable behavior together.
 
-4. Present a partition by independently useful behavior, then implement. Deduplicate equivalent
-   fixes, compare variants, split unrelated concerns, and keep inseparable behavior together.
-   Prefer existing configuration and extension points. Add public interfaces only for verified
-   callers. Keep consumer policy and application data downstream. Ask only for material scope
-   changes, costly migration choices, or conflicts with the required branch model.
+5. Refresh existing integration and its integrated feature refs as one graph. Use
+   --rebase-merges in a controlled clone, preserving feature boundaries and nested merges.
+   When using --update-refs, audit every affected ref and branches checked out in worktrees;
+   verify the intended feature heads afterward. Retire an upstreamed feature only after its
+   requirement is verified on the baseline. Retain the original merged PRs as provenance.
+   Avoid independently rebasing integration and features and then merging equivalent commits.
+   Validate and publish this refreshed graph with exact leases before opening new feature PRs,
+   so their remote integration base already contains the frozen baseline.
 
-5. Start each feature/<descriptive-name> directly from the frozen baseline. Reproduce its
-   problem and add focused, self-contained regression coverage where appropriate. Demonstrate
-   failure before and success after where practical, and test each feature independently.
-   Inspect the complete diff before committing. Preserve relevant authorship and licensing.
-   Explain the public problem, motivation, behavior, validation, and limitations in commits
-   and PRs without private names, paths, links, or application fixtures.
+6. For new behavior, reproduce the problem and add focused, self-contained regression
+   coverage. Verify each feature independently. Push feature/<descriptive-name> and open
+   a PR with integration as base. Describe the general problem, resulting behavior,
+   non-obvious choices and meaningful validation for an upstream maintainer. Keep consumer
+   identities out of public code, commits, PRs and this README. Inspect the complete diff,
+   satisfy required review/checks, and merge with a merge commit. Retain the feature branch.
+   Fetch and reconcile each remote merge before testing the combined integration graph.
 
-6. Initialize integration at exactly the baseline when absent. Otherwise rebase its existing patches
-   onto the baseline with --rebase-merges, preserving patch boundaries and merge topology. Validate
-   the rebased patches before publishing integration with an exact
-   --force-with-lease=refs/heads/integration:<verified-remote-SHA>. If the lease fails, fetch and
-   reconcile the concurrent change before retrying; never overwrite an unexamined remote update.
-   Push each validated feature and open a PR in realityforge/j2cl with that feature as head and
-   integration as base. Review its diff and required checks, then merge with a merge commit.
-   Retain feature branches as provenance even when integration rebases change the corresponding SHAs.
-   Keep features independent: do not merge integration into them or integrate new patches by direct
-   pushes, cherry-picks, squash merges, or rebase merges. If features cannot be independent, explain
-   the conflict and recommend a coherent grouping before departing from this topology.
+7. Test the combined integration commit and distinguish baseline failures from regressions.
+   Verify every retained requirement and patch disposition. Test unreleased APIs against the
+   actual source commits that provide them.
 
-7. Test the combined integration commit, including representative downstream requirements in
-   isolated consumers where useful, without changing downstream tracked configuration. Separate
-   baseline failures from regressions. Check that every audited hunk has a disposition, every
-   integrated feature has a merged PR, and every retained patch is present or has an evidenced
-   disposition after rebasing. Fetch upstream's default branch again before final publication; if
-   it advanced, refresh integration and repeat the affected validation. When the task includes
-   upstream-discussion, move it to the exact tested integration commit, using an exact
-   --force-with-lease=refs/heads/upstream-discussion:<verified-remote-SHA> when history was rewritten.
-   Update an existing upstream PR description only within the task's publication authority.
-   Remove temporary scaffolding after preserving useful evidence privately. Report the baseline,
-   feature branches and PRs, dropped and deferred requirements, cross-project dependencies,
-   exact tested commits and checks, unavailable verification, and final immutable integration SHA.
-   Report archive checksums only if actually generated and verified.
+8. Fetch upstream again before final publication; refresh and repeat affected validation if
+   it advanced. Publish rewritten integration and feature refs with exact
+   --force-with-lease=refs/heads/<branch>:<verified-remote-SHA> checks. Reconcile a failed
+   lease before retrying. Permanently retain a unique annotated snapshot tag for every tested,
+   published integration tip. Report that immutable commit as the consumer pin.
 
+9. After publishing this tested snapshot, refresh any dependent fork that also needs work.
+   Give that bounded refresh the published immutable dependency SHA and request a tested SHA
+   without starting another rollout. Preserve existing work and reuse suitable in-flight
+   changes with attribution. Finish that repository before proceeding.
+
+   Migrate scoped consumers serially in dependency order using the frozen tested fork SHAs.
+   Update pins, verified archive checksums, dependency locks, callers and obsolete patches.
+   Preserve required behavior while retiring replaced infrastructure. Deliver shared sources
+   before refreshing their vendored mirrors, preserving mirror-local changes. Run each
+   repository's focused checks and required delivery gates; merge independently when ready.
+   Long CI runs must not block unrelated consumer delivery. Monitor pending PRs and continue
+   their scoped maintenance within the accepted authority and serial-work restriction.
+
+10. Keep inventories and detailed provenance private. Update these instructions when accepted
+    workflow changes require it. Remove temporary scaffolding after preserving useful evidence.
+    Report exact baselines, feature PRs, tested snapshot commits, requirement dispositions,
+    consumer delivery states, pending CI and unavailable verification. Completion requires
+    every scoped consumer to be delivered or an explicit, evidenced blocker to be reported.
 ```
-
