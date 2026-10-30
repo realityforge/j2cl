@@ -97,6 +97,7 @@ def j2cl_web_test(
         tags,
         default_browser = None,
         browsers = [],
+        runtime_defines = {},
         **args):  # @unused
     # TODO(b/259118921): support multiple testsuites.
     fail_multiple_testsuites = """
@@ -154,6 +155,7 @@ def j2cl_web_test(
         deps = deps,
         compilation_level = "ADVANCED" if compile else "BUNDLE",
         browsers = browsers,
+        runtime_defines = runtime_defines,
         data = data,
         testonly = 1,
         entry_points = ["javatests." + test_class + "_AdapterSuite"],
