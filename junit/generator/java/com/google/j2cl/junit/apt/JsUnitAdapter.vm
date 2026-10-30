@@ -11,7 +11,7 @@ actualTest.${testMethod.javaMethodName()}();
   #end
 #end
 
-/**
+/*
  * Generated test suite from j2cl_test target
  */
 package ${testClass.jsUnitPackageName()};

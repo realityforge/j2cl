@@ -8,7 +8,10 @@ package(
 java_library(
     name = "junit_processor_library",
     testonly = 1,
-    srcs = glob(["*.java"]),
+    srcs = glob(
+        ["*.java"],
+        exclude = ["GeneratedAdapterTest.java"],
+    ),
     deps = [
         "//junit/generator/java/com/google/j2cl/junit/apt:junit_processor",
         "//junit/generator/javatests/com/google/j2cl/junit/integration/async/data:TestReturnTypeNotStructuralPromise-lib",
@@ -26,6 +29,17 @@ java_library(
         "//third_party:jsr305_annotations",
         "//third_party:junit",
         "//third_party:mockito",
+        "//third_party:truth",
+    ],
+)
+
+java_test(
+    name = "GeneratedAdapterTest",
+    srcs = ["GeneratedAdapterTest.java"],
+    deps = [
+        "//junit/generator/java/com/google/j2cl/junit/apt:junit_processor",
+        "//third_party:guava",
+        "//third_party:junit",
         "//third_party:truth",
     ],
 )
