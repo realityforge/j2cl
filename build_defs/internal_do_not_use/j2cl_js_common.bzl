@@ -99,6 +99,7 @@ def j2cl_web_test(
         compilation_level = None,
         default_browser = None,
         browsers = [],
+        runtime_defines = {},
         **args):  # @unused
     testsuite_file_name = name + "_test.js"
 
@@ -128,6 +129,7 @@ def j2cl_web_test(
         deps = deps,
         compilation_level = compilation_level,
         browsers = browsers,
+        runtime_defines = runtime_defines,
         data = data,
         testonly = 1,
         entry_points = ["javatests." + test_class + "_AdapterSuite"],
